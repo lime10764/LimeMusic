@@ -278,7 +278,10 @@ fun MainScreen(
 
                     is MusicLibraryState.Error -> {
 
-                        if (musicList.isEmpty()) {
+                        val sourceList =
+                            if (musicSourceLocal) localMusicList else musicList
+
+                        if (sourceList.isEmpty()) {
 
                             EmptyView(
                                 searching = searchQuery.isNotBlank(),
@@ -287,15 +290,46 @@ fun MainScreen(
 
                         } else {
 
-        MusicList(
-                                musicList = if (musicSourceLocal) localMusicList else musicList,
+                            MusicList(
+                                musicList = sourceList,
                                 currentMusic = currentMusic,
                                 isPlaying = isPlaying,
                                 context = context,
                                 onMusicClick = { index ->
 
-                                    val sourceList =
-                                        if (musicSourceLocal) localMusicList else musicList
+                                    if (index in sourceList.indices) {
+                                        playerViewModel.setQueue(sourceList)
+
+                                        playerViewModel.playQueue(
+                                            sourceList,
+                                            index
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    is MusicLibraryState.Success -> {
+
+                        val sourceList =
+                            if (musicSourceLocal) localMusicList else musicList
+
+                        if (sourceList.isEmpty()) {
+
+                            EmptyView(
+                                searching = searchQuery.isNotBlank(),
+                                context = context
+                            )
+
+                        } else {
+
+                            MusicList(
+                                musicList = sourceList,
+                                currentMusic = currentMusic,
+                                isPlaying = isPlaying,
+                                context = context,
+                                onMusicClick = { index ->
 
                                     if (index in sourceList.indices) {
                                         playerViewModel.setQueue(sourceList)
