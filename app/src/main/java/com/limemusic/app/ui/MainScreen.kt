@@ -119,6 +119,8 @@ fun MainScreen(
     playerViewModel: MusicPlayerViewModel
 ) {
 
+    val context = LocalContext.current
+
         // LIME_LOCAL_MUSIC_STATE
         var musicSourceLocal by remember {
             androidx.compose.runtime.mutableStateOf(false)
