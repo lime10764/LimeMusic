@@ -487,7 +487,7 @@ private fun MusicList(
         ) { index, music ->
 
             MusicRow(
-                music = music,
+                currentMusic = music,
                 playing = currentMusic?.id == music.id,
                 onClick = {
                     onMusicClick(index)
@@ -576,7 +576,7 @@ private fun MusicRow(
                 )
 
                 Icon(
-                    imageVector = Icons.Default.GraphicEq,
+                    imageVector = Icons.Default.Equalizer,
                     contentDescription = "正在播放",
                     tint = Blue,
                     modifier = Modifier
@@ -748,7 +748,7 @@ private fun MiniPlayer(
                 ) {
                     Icon(
                         imageVector = if (isPlaying)
-                            Icons.Default.GraphicEq
+                            Icons.Default.Equalizer
                         else
                             Icons.Default.MusicNote,
                         contentDescription = null,
