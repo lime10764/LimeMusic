@@ -216,6 +216,7 @@ fun MainScreen(
                             MusicList(
                                 musicList = musicList,
                                 currentMusic = currentMusic,
+                                isPlaying = isPlaying,
                                 context = context,
                                 onMusicClick = { index ->
 
