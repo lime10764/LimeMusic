@@ -3,8 +3,6 @@ package com.limemusic.app.ui
 import android.content.Context
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -514,7 +512,6 @@ private fun MusicRow(
     isPlaying: Boolean,
     onClick: () -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
@@ -538,16 +535,9 @@ private fun MusicRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            }
             .clip(RoundedCornerShape(14.dp))
             .background(background)
-            .clickable(
-                interactionSource = interactionSource,
-                onClick = onClick
-            )
+            .clickable(onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -583,10 +573,6 @@ private fun MusicRow(
                     tint = Blue,
                     modifier = Modifier
                         .size(22.dp)
-                        .graphicsLayer {
-                            scaleX = pulse
-                            scaleY = pulse
-                        }
                 )
             } else if (isCurrent) {
                 Icon(
@@ -757,10 +743,6 @@ private fun MiniPlayer(
                         tint = Blue,
                         modifier = Modifier
                             .size(20.dp)
-                            .graphicsLayer {
-                                scaleX = iconScale
-                                scaleY = iconScale
-                            }
                     )
                 }
 
@@ -805,10 +787,6 @@ private fun MiniPlayer(
                     interactionSource = playInteraction,
                     modifier = Modifier
                         .size(37.dp)
-                        .graphicsLayer {
-                            scaleX = buttonScale
-                            scaleY = buttonScale
-                        }
                         .clip(CircleShape)
                         .background(Blue)
                 ) {
