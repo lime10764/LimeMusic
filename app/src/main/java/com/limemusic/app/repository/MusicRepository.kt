@@ -33,7 +33,7 @@ class MusicRepository {
                     }
 
                     val sorted = musicList.sortedWith(
-                        compareBy(String.CASE_INSENSITIVE_ORDER) { it.title }
+                        compareBy<MusicItem>(String.CASE_INSENSITIVE_ORDER) { it.title }
                             .thenBy(String.CASE_INSENSITIVE_ORDER) { it.artist }
                     )
 
