@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.LimeMusic" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#F7F9FF</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">#F7F9FF</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:textColorPrimary">#20242C</item>
+        <item name="android:textColorSecondary">#777D88</item>
+        <item name="android:colorAccent">#647BD2</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowSplashScreenBackground">#F7F9FF</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+    </style>
+</resources>
