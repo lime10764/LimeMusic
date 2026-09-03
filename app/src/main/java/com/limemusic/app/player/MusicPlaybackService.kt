@@ -63,7 +63,7 @@ class MusicPlaybackService : MediaSessionService() {
 
                 setAudioAttributes(
                     audioAttributes,
-                    true
+                    false
                 )
 
                 // 播放列表循环
