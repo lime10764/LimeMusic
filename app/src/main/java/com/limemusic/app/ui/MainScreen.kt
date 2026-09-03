@@ -692,19 +692,6 @@ private fun MiniPlayer(
         label = "buttonScale"
     )
 
-    val transition =
-        rememberInfiniteTransition(label = "miniPlayer")
-
-    val iconScale by transition.animateFloat(
-        initialValue = 0.96f,
-        targetValue = if (isPlaying) 1.04f else 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "iconScale"
-    )
-
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -723,47 +710,59 @@ private fun MiniPlayer(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(BlueSoft),
-                    contentAlignment = Alignment.Center
+                /*
+                 * 只让歌曲内容交叉渐变。
+                 * 整个 MiniPlayer 不参与动画，因此不会上下跳动。
+                 */
+                androidx.compose.animation.Crossfade(
+                    targetState = currentMusic.id,
+                    animationSpec = tween(220),
+                    label = "musicInfoCrossfade"
                 ) {
-                    Icon(
-                        imageVector = if (isPlaying)
-                            Icons.Default.MusicNote
-                        else
-                            Icons.Default.MusicNote,
-                        contentDescription = null,
-                        tint = Blue,
+                    Box(
                         modifier = Modifier
-                            .size(20.dp)
-                    )
+                            .size(38.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(BlueSoft),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MusicNote,
+                            contentDescription = null,
+                            tint = Blue,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
 
                 Spacer(Modifier.width(9.dp))
 
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.Center
+                androidx.compose.animation.Crossfade(
+                    targetState = currentMusic.id,
+                    animationSpec = tween(220),
+                    label = "musicTextCrossfade",
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(
-                        text = currentMusic.displayTitle(),
-                        color = TextPrimary,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = currentMusic.displayTitle(),
+                            color = TextPrimary,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
 
-                    Text(
-                        text = currentMusic.displayArtist(),
-                        color = TextSecondary,
-                        fontSize = 10.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                        Text(
+                            text = currentMusic.displayArtist(),
+                            color = TextSecondary,
+                            fontSize = 10.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
 
                 IconButton(
@@ -783,18 +782,24 @@ private fun MiniPlayer(
                     interactionSource = playInteraction,
                     modifier = Modifier
                         .size(37.dp)
+                        .graphicsLayer {
+                            scaleX = buttonScale
+                            scaleY = buttonScale
+                        }
                         .clip(CircleShape)
                         .background(Blue)
                 ) {
                     Icon(
-                        imageVector =
-                            if (isPlaying)
-                                Icons.Default.Pause
-                            else
-                                Icons.Default.PlayArrow,
-                        contentDescription =
-                            if (isPlaying) "暂停"
-                            else "播放",
+                        imageVector = if (isPlaying) {
+                            Icons.Default.Pause
+                        } else {
+                            Icons.Default.PlayArrow
+                        },
+                        contentDescription = if (isPlaying) {
+                            "暂停"
+                        } else {
+                            "播放"
+                        },
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
                     )
@@ -813,22 +818,36 @@ private fun MiniPlayer(
                 }
             }
 
-            Slider(
-                value = progress.coerceIn(0f, 1f),
-                onValueChange = onSeek,
+            /*
+             * 视觉上保持细进度条，
+             * 但给 Slider 足够的触摸高度，解决无法拖动的问题。
+             */
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(9.dp)
-                    .padding(horizontal = 8.dp),
-                colors = SliderDefaults.colors(
-                    thumbColor = Blue,
-                    activeTrackColor = Blue,
-                    inactiveTrackColor = DividerColor
+                    .height(28.dp)
+                    .padding(horizontal = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Slider(
+                    value = progress.coerceIn(0f, 1f),
+                    onValueChange = { value ->
+                        onSeek(value)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(28.dp),
+                    colors = SliderDefaults.colors(
+                        thumbColor = Blue,
+                        activeTrackColor = Blue,
+                        inactiveTrackColor = DividerColor
+                    )
                 )
-            )
+            }
         }
     }
 }
+
 @Composable
 private fun LoadingView(
     text: String
