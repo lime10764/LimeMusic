@@ -1,5 +1,9 @@
 package com.limemusic.app.ui
 
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -25,10 +29,116 @@ import com.limemusic.app.data.MusicItem
 import com.limemusic.app.data.MusicLibraryState
 
 @Composable
+
+
+private fun openMusicFeedbackEmail(context: android.content.Context) {
+    val email = "3327544159@qq.com"
+
+    val subject = Uri.encode("Lime Music 歌曲反馈")
+
+    val body = Uri.encode(
+        """
+您好，Lime Music：
+
+我在使用 Lime Music 时没有找到喜欢的歌曲，想向您反馈：
+
+希望添加的歌曲：
+歌手：
+歌曲链接/来源：
+其他建议：
+
+谢谢！
+        """.trimIndent()
+    )
+
+    val intent = Intent(
+        Intent.ACTION_SENDTO,
+        Uri.parse("mailto:$email?subject=$subject&body=$body")
+    )
+
+    try {
+        context.startActivity(intent)
+    } catch (_: Exception) {
+        Toast.makeText(
+            context,
+            "手机没有可用的邮件应用",
+            Toast.LENGTH_SHORT
+        ).show()
+    
+    Spacer(modifier = Modifier.height(14.dp))
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                Toast.makeText(
+                    context,
+                    "正在打开邮件反馈…",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                openMusicFeedbackEmail(context)
+            },
+        shape = RoundedCornerShape(22.dp),
+        color = LIME_BLUE_SOFT,
+        tonalElevation = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 20.dp,
+                    vertical = 15.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "✉",
+                fontSize = 23.sp,
+                color = LIME_BLUE
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "没有喜欢的歌？告诉我们",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LIME_BLUE
+                )
+
+                Text(
+                    text = "点击反馈歌曲，我们会持续更新音乐库",
+                    fontSize = 12.sp,
+                    color = LIME_BLUE.copy(alpha = 0.70f)
+                )
+            }
+
+            Text(
+                text = "›",
+                fontSize = 27.sp,
+                color = LIME_BLUE
+            )
+        }
+    }
+
+    }
+}
+
+
+
+private val LIME_BLUE = androidx.compose.ui.graphics.Color(0xFF4D7CFE)
+private val LIME_BLUE_LIGHT = androidx.compose.ui.graphics.Color(0xFF6EA8FF)
+private val LIME_BLUE_SOFT = androidx.compose.ui.graphics.Color(0xFFEAF1FF)
+
 fun MainScreen(
     musicViewModel: MusicViewModel,
     playerViewModel: MusicPlayerViewModel
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     val libraryState by musicViewModel.libraryState.collectAsState()
     val musicList by musicViewModel.displayMusic.collectAsState()
     val searchQuery by musicViewModel.searchQuery.collectAsState()
