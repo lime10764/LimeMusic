@@ -180,6 +180,7 @@ fun MainScreen(
                             MusicList(
                                 musicList = musicList,
                                 currentMusic = currentMusic,
+                                isPlaying = isPlaying,
                                 context = context,
                                 onMusicClick = { index ->
 
@@ -238,14 +239,13 @@ fun MainScreen(
             ) {
 
                 MiniPlayer(
-                    music = currentMusic,
+                    currentMusic = currentMusic,
                     isPlaying = isPlaying,
                     progress = progress,
                     onPrevious = playerViewModel::previous,
                     onPlayPause = playerViewModel::togglePlayPause,
                     onNext = playerViewModel::next,
-                    onSeek = playerViewModel::seekFraction,
-                    onSeekFinished = playerViewModel::endSeek
+                    onSeek = playerViewModel::seekFraction
                 )
             }
         }
@@ -434,6 +434,7 @@ private fun SearchBar(
 private fun MusicList(
     musicList: List<MusicItem>,
     currentMusic: MusicItem?,
+    isPlaying: Boolean,
     context: Context,
     onMusicClick: (Int) -> Unit
 ) {
@@ -543,7 +544,6 @@ private fun MusicRow(
             .background(background)
             .clickable(
                 interactionSource = interactionSource,
-                indication = LocalIndication.current,
                 onClick = onClick
             )
             .padding(horizontal = 10.dp, vertical = 7.dp),
@@ -576,7 +576,7 @@ private fun MusicRow(
                 )
 
                 Icon(
-                    imageVector = Icons.Default.Equalizer,
+                    imageVector = Icons.Default.MusicNote,
                     contentDescription = "正在播放",
                     tint = Blue,
                     modifier = Modifier
@@ -748,7 +748,7 @@ private fun MiniPlayer(
                 ) {
                     Icon(
                         imageVector = if (isPlaying)
-                            Icons.Default.Equalizer
+                            Icons.Default.MusicNote
                         else
                             Icons.Default.MusicNote,
                         contentDescription = null,
