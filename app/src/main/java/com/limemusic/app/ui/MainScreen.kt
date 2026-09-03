@@ -238,15 +238,17 @@ fun MainScreen(
                 exit = fadeOut()
             ) {
 
-                MiniPlayer(
-                    currentMusic = currentMusic,
-                    isPlaying = isPlaying,
-                    progress = progress,
-                    onPrevious = playerViewModel::previous,
-                    onPlayPause = playerViewModel::togglePlayPause,
-                    onNext = playerViewModel::next,
-                    onSeek = playerViewModel::seekFraction
-                )
+                currentMusic?.let { music ->
+        MiniPlayer(
+            currentMusic = music,
+            isPlaying = isPlaying,
+            progress = progress,
+            onPrevious = playerViewModel::previous,
+            onPlayPause = playerViewModel::togglePlayPause,
+            onNext = playerViewModel::next,
+            onSeek = playerViewModel::seekFraction
+        )
+    }
             }
         }
 
@@ -488,11 +490,10 @@ private fun MusicList(
         ) { index, music ->
 
             MusicRow(
-                currentMusic = music,
-                playing = currentMusic?.id == music.id,
-                onClick = {
-                    onMusicClick(index)
-                }
+                music = music,
+                isCurrent = currentMusic?.id == music.id,
+                isPlaying = isPlaying && currentMusic?.id == music.id,
+                onClick = { onMusicClick(index) }
             )
         }
 
