@@ -1,4 +1,16 @@
+
+
+
+
+
 package com.limemusic.app.ui
+
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.limemusic.app.player.LocalMusicRepository
 
 import android.content.Context
 import androidx.compose.ui.graphics.graphicsLayer
@@ -107,6 +119,76 @@ fun MainScreen(
     playerViewModel: MusicPlayerViewModel
 ) {
 
+        // LIME_LOCAL_MUSIC_STATE
+        var musicSourceLocal by remember {
+            androidx.compose.runtime.mutableStateOf(false)
+        }
+
+        var localMusicList by remember {
+            androidx.compose.runtime.mutableStateOf<List<MusicItem>>(emptyList())
+        }
+
+        var localMusicLoading by remember {
+            androidx.compose.runtime.mutableStateOf(false)
+        }
+
+        val localMusicPermission =
+            if (android.os.Build.VERSION.SDK_INT >= 33)
+                Manifest.permission.READ_MEDIA_AUDIO
+            else
+                Manifest.permission.READ_EXTERNAL_STORAGE
+
+        val requestLocalMusicPermission =
+            rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { granted ->
+                if (granted) {
+                    localMusicLoading = true
+
+                    localMusicList =
+                        LocalMusicRepository.scan(
+                            context.contentResolver
+                        )
+
+                    localMusicLoading = false
+                }
+            }
+
+        fun openLocalMusic() {
+
+            val granted =
+                ContextCompat.checkSelfPermission(
+                    context,
+                    localMusicPermission
+                ) == PackageManager.PERMISSION_GRANTED
+
+            if (granted) {
+
+                localMusicLoading = true
+
+                localMusicList =
+                    LocalMusicRepository.scan(
+                        context.contentResolver
+                    )
+
+                localMusicLoading = false
+
+            } else {
+
+                requestLocalMusicPermission.launch(
+                    localMusicPermission
+                )
+            }
+
+            musicSourceLocal = true
+        }
+
+        fun openRepositoryMusic() {
+            musicSourceLocal = false
+        }
+
+
+
     val context = androidx.compose.ui.platform.LocalContext.current
 
     val libraryState by musicViewModel.libraryState.collectAsState()
@@ -177,6 +259,42 @@ fun MainScreen(
 
                         if (musicList.isNotEmpty()) {
 
+
+        // ===== 音乐来源切换 =====
+        androidx.compose.foundation.layout.Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
+            androidx.compose.material3.FilterChip(
+                selected = !musicSourceLocal,
+                onClick = {
+                    openRepositoryMusic()
+                },
+                label = {
+                    Text("仓库音乐")
+                }
+            )
+
+            androidx.compose.material3.FilterChip(
+                selected = musicSourceLocal,
+                onClick = {
+                    openLocalMusic()
+                },
+                label = {
+                    Text(
+                        if (localMusicLoading)
+                            "扫描中…"
+                        else
+                            "本地音乐"
+                    )
+                }
+            )
+        }
+
+
                             MusicList(
                                 musicList = musicList,
                                 currentMusic = currentMusic,
@@ -184,12 +302,17 @@ fun MainScreen(
                                 context = context,
                                 onMusicClick = { index ->
 
-                                    playerViewModel.setQueue(musicList)
+                                    val sourceList =
+                                        if (musicSourceLocal) localMusicList else musicList
 
-                                    playerViewModel.playQueue(
-                                        musicList,
-                                        index
-                                    )
+                                    if (index in sourceList.indices) {
+                                        playerViewModel.setQueue(sourceList)
+
+                                        playerViewModel.playQueue(
+                                            sourceList,
+                                            index
+                                        )
+                                    }
                                 }
                             )
 
@@ -220,12 +343,17 @@ fun MainScreen(
                                 context = context,
                                 onMusicClick = { index ->
 
-                                    playerViewModel.setQueue(musicList)
+                                    val sourceList =
+                                        if (musicSourceLocal) localMusicList else musicList
 
-                                    playerViewModel.playQueue(
-                                        musicList,
-                                        index
-                                    )
+                                    if (index in sourceList.indices) {
+                                        playerViewModel.setQueue(sourceList)
+
+                                        playerViewModel.playQueue(
+                                            sourceList,
+                                            index
+                                        )
+                                    }
                                 }
                             )
                         }
