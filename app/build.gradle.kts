@@ -89,7 +89,6 @@ dependencies {
     implementation("com.google.code.gson:gson:2.13.1")
 
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
-    implementation("io.coil-kt.coil-network-okhttp:3.3.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
