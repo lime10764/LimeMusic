@@ -236,6 +236,26 @@ fun MainScreen(
                 onClear = musicViewModel::clearSearch
             )
 
+            // ===== 音乐来源切换 =====
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                androidx.compose.material3.FilterChip(
+                    selected = !musicSourceLocal,
+                    onClick = { openRepositoryMusic() },
+                    label = { Text("仓库音乐") }
+                )
+
+                androidx.compose.material3.FilterChip(
+                    selected = musicSourceLocal,
+                    onClick = { openLocalMusic() },
+                    label = { Text("本地音乐") }
+                )
+            }
+
             Spacer(
                 modifier = Modifier.height(4.dp)
             )
@@ -258,76 +278,6 @@ fun MainScreen(
 
                     is MusicLibraryState.Error -> {
 
-                        if (musicList.isNotEmpty()) {
-
-
-        // ===== 音乐来源切换 =====
-        androidx.compose.foundation.layout.Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-
-            androidx.compose.material3.FilterChip(
-                selected = !musicSourceLocal,
-                onClick = {
-                    openRepositoryMusic()
-                },
-                label = {
-                    Text("仓库音乐")
-                }
-            )
-
-            androidx.compose.material3.FilterChip(
-                selected = musicSourceLocal,
-                onClick = {
-                    openLocalMusic()
-                },
-                label = {
-                    Text(
-                        if (localMusicLoading)
-                            "扫描中…"
-                        else
-                            "本地音乐"
-                    )
-                }
-            )
-        }
-
-
-                            MusicList(
-                                musicList = musicList,
-                                currentMusic = currentMusic,
-                                isPlaying = isPlaying,
-                                context = context,
-                                onMusicClick = { index ->
-
-                                    val sourceList =
-                                        if (musicSourceLocal) localMusicList else musicList
-
-                                    if (index in sourceList.indices) {
-                                        playerViewModel.setQueue(sourceList)
-
-                                        playerViewModel.playQueue(
-                                            sourceList,
-                                            index
-                                        )
-                                    }
-                                }
-                            )
-
-                        } else {
-
-                            ErrorView(
-                                message = state.message,
-                                onRetry = musicViewModel::refreshMusic
-                            )
-                        }
-                    }
-
-                    is MusicLibraryState.Success -> {
-
                         if (musicList.isEmpty()) {
 
                             EmptyView(
@@ -337,8 +287,8 @@ fun MainScreen(
 
                         } else {
 
-                            MusicList(
-                                musicList = musicList,
+        MusicList(
+                                musicList = if (musicSourceLocal) localMusicList else musicList,
                                 currentMusic = currentMusic,
                                 isPlaying = isPlaying,
                                 context = context,

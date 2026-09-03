@@ -179,12 +179,18 @@ class MusicPlayerManager(context: Context) {
                 )
             }
 
+        val metadata = metadataBuilder
+            .setExtras(
+                android.os.Bundle().apply {
+                    putString("lime_fallback_url", music.fallbackUrl)
+                }
+            )
+            .build()
+
         return MediaItem.Builder()
             .setMediaId(music.id)
             .setUri(music.streamUrl)
-            .setMediaMetadata(
-                metadataBuilder.build()
-            )
+            .setMediaMetadata(metadata)
             .build()
     }
 

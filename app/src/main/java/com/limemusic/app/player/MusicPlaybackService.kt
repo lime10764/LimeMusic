@@ -76,8 +76,41 @@ class MusicPlaybackService : MediaSessionService() {
                             error: PlaybackException
                         ) {
 
-                            // 当前歌曲出错时尝试下一首
-                            if (mediaItemCount > 1) {
+                            val currentItem =
+                                currentMediaItem ?: return
+
+                            val fallbackUrl =
+                                currentItem.mediaMetadata.extras
+                                    ?.getString("lime_fallback_url")
+                                    ?.trim()
+
+                            val currentUrl =
+                                currentItem.localConfiguration
+                                    ?.uri
+                                    ?.toString()
+
+                            // 主地址失败，且备用地址存在并且不同
+                            if (
+                                !fallbackUrl.isNullOrBlank() &&
+                                fallbackUrl != currentUrl
+                            ) {
+
+                                val fallbackItem =
+                                    currentItem.buildUpon()
+                                        .setUri(fallbackUrl)
+                                        .build()
+
+                                setMediaItem(
+                                    fallbackItem,
+                                    currentPosition
+                                )
+
+                                prepare()
+                                play()
+
+                            } else if (mediaItemCount > 1) {
+
+                                // 主地址和备用地址都失败，才跳下一首
                                 seekToNextMediaItem()
                                 prepare()
                                 play()
