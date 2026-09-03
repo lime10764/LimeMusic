@@ -6,7 +6,6 @@ import android.net.Uri
 import android.widget.Toast
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -16,16 +15,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,18 +38,18 @@ import androidx.compose.ui.unit.sp
 import com.limemusic.app.data.MusicItem
 import com.limemusic.app.data.MusicLibraryState
 
-private val LimeBlue = Color(0xFF3478F6)
-private val LimeBlueLight = Color(0xFF6EA8FF)
-private val LimeBlueSoft = Color(0xFFEAF2FF)
-private val LimeBluePale = Color(0xFFF4F8FF)
+private val Blue = Color(0xFF3478F6)
+private val BlueSoft = Color(0xFFEAF2FF)
 
-private val TextPrimary = Color(0xFF182033)
-private val TextSecondary = Color(0xFF737C8F)
-private val GlassWhite = Color(0xFFFFFFFF)
-private val BackgroundTop = Color(0xFFF4F8FF)
-private val BackgroundBottom = Color(0xFFF9FAFD)
+private val Background = Color(0xFFF8F9FC)
+private val SurfaceColor = Color(0xFFFFFFFF)
+
+private val TextPrimary = Color(0xFF181B22)
+private val TextSecondary = Color(0xFF858B98)
+private val DividerColor = Color(0xFFE9EBF0)
 
 private fun openMusicFeedbackEmail(context: Context) {
+
     val email = "3327544159@qq.com"
 
     val subject = Uri.encode("Lime Music 歌曲反馈")
@@ -53,9 +58,9 @@ private fun openMusicFeedbackEmail(context: Context) {
         """
 您好，Lime Music：
 
-我在使用 Lime Music 时没有找到喜欢的歌曲，想反馈一些歌曲。
+我没有找到喜欢的歌曲，希望添加以下歌曲：
 
-希望添加的歌曲：
+歌曲：
 歌手：
 歌曲链接/来源：
 其他建议：
@@ -68,10 +73,13 @@ private fun openMusicFeedbackEmail(context: Context) {
         "mailto:$email?subject=$subject&body=$body"
     )
 
-    val intent = Intent(Intent.ACTION_SENDTO, uri)
-
     try {
-        context.startActivity(intent)
+        context.startActivity(
+            Intent(
+                Intent.ACTION_SENDTO,
+                uri
+            )
+        )
     } catch (_: Exception) {
         Toast.makeText(
             context,
@@ -86,11 +94,13 @@ fun MainScreen(
     musicViewModel: MusicViewModel,
     playerViewModel: MusicPlayerViewModel
 ) {
-    val context = LocalContext.current
+
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     val libraryState by musicViewModel.libraryState.collectAsState()
     val musicList by musicViewModel.displayMusic.collectAsState()
     val searchQuery by musicViewModel.searchQuery.collectAsState()
+
     val currentMusic by playerViewModel.currentMusic.collectAsState()
     val isPlaying by playerViewModel.isPlaying.collectAsState()
     val progress by playerViewModel.progress.collectAsState()
@@ -103,48 +113,8 @@ fun MainScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        BackgroundTop,
-                        Color(0xFFF8FAFF),
-                        BackgroundBottom
-                    )
-                )
-            )
+            .background(Background)
     ) {
-
-        // 背景流光
-        Box(
-            modifier = Modifier
-                .offset(x = (-80).dp, y = (-70).dp)
-                .size(230.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            LimeBlueLight.copy(alpha = 0.20f),
-                            Color.Transparent
-                        )
-                    ),
-                    CircleShape
-                )
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .offset(x = 80.dp, y = 80.dp)
-                .size(260.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF9BC7FF).copy(alpha = 0.15f),
-                            Color.Transparent
-                        )
-                    ),
-                    CircleShape
-                )
-        )
 
         Column(
             modifier = Modifier
@@ -152,12 +122,13 @@ fun MainScreen(
                 .navigationBarsPadding()
         ) {
 
-            Header(
-                musicCount = when (libraryState) {
+            TopBar(
+                count = when (libraryState) {
                     is MusicLibraryState.Success ->
                         (libraryState as MusicLibraryState.Success).count
 
-                    else -> musicList.size
+                    else ->
+                        musicList.size
                 },
                 onRefresh = {
                     musicViewModel.refreshMusic()
@@ -170,7 +141,9 @@ fun MainScreen(
                 onClear = musicViewModel::clearSearch
             )
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(
+                modifier = Modifier.height(4.dp)
+            )
 
             Box(
                 modifier = Modifier
@@ -180,11 +153,13 @@ fun MainScreen(
 
                 when (val state = libraryState) {
 
-                    MusicLibraryState.Idle ->
-                        LoadingView("准备音乐库…")
+                    MusicLibraryState.Idle -> {
+                        LoadingView("准备音乐库")
+                    }
 
-                    MusicLibraryState.Loading ->
-                        LoadingView("正在同步音乐…")
+                    MusicLibraryState.Loading -> {
+                        LoadingView("正在同步音乐")
+                    }
 
                     is MusicLibraryState.Error -> {
 
@@ -195,7 +170,9 @@ fun MainScreen(
                                 currentMusic = currentMusic,
                                 context = context,
                                 onMusicClick = { index ->
+
                                     playerViewModel.setQueue(musicList)
+
                                     playerViewModel.playQueue(
                                         musicList,
                                         index
@@ -205,9 +182,9 @@ fun MainScreen(
 
                         } else {
 
-                            EmptyView(
-                                searching = searchQuery.isNotBlank(),
-                                context = context
+                            ErrorView(
+                                message = state.message,
+                                onRetry = musicViewModel::refreshMusic
                             )
                         }
                     }
@@ -228,7 +205,9 @@ fun MainScreen(
                                 currentMusic = currentMusic,
                                 context = context,
                                 onMusicClick = { index ->
+
                                     playerViewModel.setQueue(musicList)
+
                                     playerViewModel.playQueue(
                                         musicList,
                                         index
@@ -263,7 +242,11 @@ fun MainScreen(
             visible = playerError != null,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 12.dp),
+                .padding(
+                    top = 12.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                ),
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -277,19 +260,17 @@ fun MainScreen(
 }
 
 @Composable
-private fun Header(
-    musicCount: Int,
+private fun TopBar(
+    count: Int,
     onRefresh: () -> Unit
 ) {
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(72.dp)
             .padding(
-                start = 22.dp,
-                end = 18.dp,
-                top = 22.dp,
-                bottom = 10.dp
+                horizontal = 20.dp
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -298,85 +279,48 @@ private fun Header(
             modifier = Modifier.weight(1f)
         ) {
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Text(
+                text = "Lime Music",
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary,
+                letterSpacing = (-0.5).sp
+            )
 
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .background(
-                            Brush.linearGradient(
-                                listOf(
-                                    LimeBlue,
-                                    LimeBlueLight
-                                )
-                            ),
-                            RoundedCornerShape(13.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-
-                    Icon(
-                        Icons.Default.MusicNote,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(21.dp)
-                    )
-                }
-
-                Spacer(Modifier.width(11.dp))
-
-                Text(
-                    text = "Lime",
-                    fontSize = 27.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = TextPrimary,
-                    letterSpacing = (-1.1).sp
-                )
-
-                Text(
-                    text = " Music",
-                    fontSize = 27.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = LimeBlue,
-                    letterSpacing = (-1.1).sp
-                )
-            }
-
-            Spacer(Modifier.height(5.dp))
+            Spacer(
+                modifier = Modifier.height(2.dp)
+            )
 
             Text(
-                text = if (musicCount > 0) {
-                    "$musicCount 首歌曲 · 随时播放"
+                text = if (count > 0) {
+                    "$count 首歌曲"
                 } else {
-                    "你的音乐空间"
+                    "音乐库"
                 },
-                fontSize = 13.sp,
+                fontSize = 12.sp,
                 color = TextSecondary
             )
         }
 
-        Surface(
+        Box(
             modifier = Modifier
-                .size(46.dp)
-                .clickable(onClick = onRefresh),
-            shape = CircleShape,
-            color = GlassWhite.copy(alpha = 0.78f),
-            shadowElevation = 3.dp
+                .size(40.dp)
+                .background(
+                    color = SurfaceColor,
+                    shape = CircleShape
+                )
+                .clickable(
+                    onClick = onRefresh
+                ),
+            contentAlignment = Alignment.Center
         ) {
 
-            Box(
-                contentAlignment = Alignment.Center
-            ) {
-
-                Icon(
-                    Icons.Default.Refresh,
-                    contentDescription = "刷新音乐库",
-                    tint = LimeBlue,
-                    modifier = Modifier.size(21.dp)
-                )
-            }
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "刷新",
+                tint = Blue,
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }
@@ -388,73 +332,87 @@ private fun SearchBar(
     onClear: () -> Unit
 ) {
 
-    Surface(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(22.dp),
-        color = GlassWhite.copy(alpha = 0.76f),
-        shadowElevation = 3.dp
+            .padding(
+                horizontal = 16.dp
+            )
+            .height(48.dp)
+            .background(
+                color = SurfaceColor,
+                shape = RoundedCornerShape(14.dp)
+            )
+            .padding(
+                horizontal = 13.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Row(
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = "搜索",
+            tint = TextSecondary,
+            modifier = Modifier.size(20.dp)
+        )
+
+        Spacer(
+            modifier = Modifier.width(9.dp)
+        )
+
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(54.dp)
-                .padding(horizontal = 15.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .weight(1f)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.CenterStart
         ) {
 
-            Icon(
-                Icons.Default.Search,
-                contentDescription = "搜索",
-                tint = LimeBlue,
-                modifier = Modifier.size(22.dp)
-            )
-
-            Spacer(Modifier.width(10.dp))
-
-            androidx.compose.foundation.text.BasicTextField(
+            BasicTextField(
                 value = query,
                 onValueChange = onQueryChange,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    color = TextPrimary,
-                    fontSize = 15.sp
+                textStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = TextPrimary
                 ),
                 decorationBox = { innerTextField ->
 
-                    Box {
+                    if (query.isEmpty()) {
 
-                        if (query.isBlank()) {
-
-                            Text(
-                                text = "搜索歌曲、歌手或文件名",
-                                color = Color(0xFF9AA2B2),
-                                fontSize = 15.sp
-                            )
-                        }
-
-                        innerTextField()
+                        Text(
+                            text = "搜索歌曲或歌手",
+                            fontSize = 14.sp,
+                            color = Color(0xFF9AA0AB)
+                        )
                     }
+
+                    innerTextField()
                 }
             )
+        }
 
-            if (query.isNotBlank()) {
+        if (query.isNotEmpty()) {
 
-                IconButton(
-                    onClick = onClear
-                ) {
+            Spacer(
+                modifier = Modifier.width(4.dp)
+            )
 
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "清除搜索",
-                        tint = TextSecondary
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable(
+                        onClick = onClear
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "清除",
+                    tint = TextSecondary,
+                    modifier = Modifier.size(18.dp)
+                )
             }
         }
     }
@@ -473,10 +431,9 @@ private fun MusicList(
         contentPadding = PaddingValues(
             start = 16.dp,
             end = 16.dp,
-            top = 12.dp,
-            bottom = 20.dp
-        ),
-        verticalArrangement = Arrangement.spacedBy(9.dp)
+            top = 10.dp,
+            bottom = 14.dp
+        )
     ) {
 
         item {
@@ -485,35 +442,27 @@ private fun MusicList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        horizontal = 4.dp,
-                        vertical = 2.dp
+                        horizontal = 3.dp,
+                        vertical = 8.dp
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
                     text = "全部歌曲",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextSecondary
                 )
 
-                Spacer(Modifier.width(7.dp))
+                Spacer(
+                    modifier = Modifier.width(6.dp)
+                )
 
                 Text(
                     text = "${musicList.size}",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = LimeBlue,
-                    modifier = Modifier
-                        .background(
-                            LimeBlueSoft,
-                            RoundedCornerShape(20.dp)
-                        )
-                        .padding(
-                            horizontal = 8.dp,
-                            vertical = 3.dp
-                        )
+                    fontSize = 11.sp,
+                    color = Blue
                 )
             }
         }
@@ -536,9 +485,7 @@ private fun MusicList(
 
         item {
 
-            Spacer(Modifier.height(4.dp))
-
-            FeedbackCard(
+            FeedbackEntry(
                 context = context
             )
         }
@@ -552,75 +499,50 @@ private fun MusicRow(
     onClick: () -> Unit
 ) {
 
-    val titleColor by animateColorAsState(
-        targetValue = if (playing) LimeBlue else TextPrimary,
-        label = "titleColor"
-    )
-
-    Surface(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(22.dp),
-        color = if (playing) {
-            Color(0xFFE8F0FF).copy(alpha = 0.94f)
-        } else {
-            GlassWhite.copy(alpha = 0.73f)
-        },
-        shadowElevation = if (playing) 4.dp else 1.dp
+            .clickable(
+                onClick = onClick
+            )
     ) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = 12.dp,
-                    vertical = 10.dp
-                ),
+                .height(68.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             Box(
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(46.dp)
                     .background(
-                        if (playing) {
-                            Brush.linearGradient(
-                                listOf(
-                                    LimeBlue,
-                                    LimeBlueLight
-                                )
-                            )
+                        color = if (playing) {
+                            Blue
                         } else {
-                            Brush.linearGradient(
-                                listOf(
-                                    Color(0xFFEAF0FA),
-                                    Color(0xFFF5F7FB)
-                                )
-                            )
+                            Color(0xFFF0F2F6)
                         },
-                        RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(12.dp)
                     ),
                 contentAlignment = Alignment.Center
             ) {
 
                 Icon(
-                    if (playing) {
-                        Icons.Default.GraphicEq
-                    } else {
-                        Icons.Default.MusicNote
-                    },
+                    imageVector = Icons.Default.MusicNote,
                     contentDescription = null,
                     tint = if (playing) {
                         Color.White
                     } else {
-                        LimeBlue
+                        Color(0xFF777E8B)
                     },
-                    modifier = Modifier.size(23.dp)
+                    modifier = Modifier.size(21.dp)
                 )
             }
 
-            Spacer(Modifier.width(13.dp))
+            Spacer(
+                modifier = Modifier.width(12.dp)
+            )
 
             Column(
                 modifier = Modifier.weight(1f)
@@ -630,68 +552,65 @@ private fun MusicRow(
                     text = music.displayTitle(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     fontWeight = if (playing) {
-                        FontWeight.Bold
-                    } else {
                         FontWeight.SemiBold
+                    } else {
+                        FontWeight.Normal
                     },
-                    color = titleColor
+                    color = if (playing) {
+                        Blue
+                    } else {
+                        TextPrimary
+                    }
                 )
 
-                Spacer(Modifier.height(4.dp))
+                Spacer(
+                    modifier = Modifier.height(4.dp)
+                )
 
                 Text(
                     text = music.displayArtist(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 12.sp,
-                    color = if (playing) {
-                        LimeBlue.copy(alpha = 0.78f)
-                    } else {
-                        TextSecondary
-                    }
+                    color = TextSecondary
                 )
             }
 
-            Spacer(Modifier.width(8.dp))
+            Spacer(
+                modifier = Modifier.width(10.dp)
+            )
 
-            Surface(
-                shape = RoundedCornerShape(9.dp),
-                color = if (playing) {
-                    LimeBlueSoft
-                } else {
-                    Color(0xFFF0F2F6)
-                }
-            ) {
-
-                Text(
-                    text = music.extension.uppercase(),
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (playing) {
-                        LimeBlue
-                    } else {
-                        Color(0xFF8C94A4)
-                    },
-                    modifier = Modifier.padding(
-                        horizontal = 7.dp,
-                        vertical = 4.dp
-                    )
-                )
-            }
+            Text(
+                text = music.extension.uppercase(),
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF9AA0AA)
+            )
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 58.dp
+                )
+                .height(1.dp)
+                .background(DividerColor)
+        )
     }
 }
 
 @Composable
-private fun FeedbackCard(
+private fun FeedbackEntry(
     context: Context
 ) {
 
-    Surface(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(56.dp)
             .clickable {
 
                 Toast.makeText(
@@ -702,68 +621,25 @@ private fun FeedbackCard(
 
                 openMusicFeedbackEmail(context)
             },
-        shape = RoundedCornerShape(23.dp),
-        color = LimeBluePale.copy(alpha = 0.88f),
-        shadowElevation = 2.dp
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 17.dp,
-                    vertical = 15.dp
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Text(
+            text = "没有喜欢的歌？",
+            fontSize = 13.sp,
+            color = Blue,
+            fontWeight = FontWeight.Medium
+        )
 
-            Box(
-                modifier = Modifier
-                    .size(43.dp)
-                    .background(
-                        LimeBlue,
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
+        Spacer(
+            modifier = Modifier.width(6.dp)
+        )
 
-                Icon(
-                    Icons.Default.Email,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(Modifier.width(12.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-
-                Text(
-                    text = "没有喜欢的歌？",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = LimeBlue
-                )
-
-                Spacer(Modifier.height(3.dp))
-
-                Text(
-                    text = "告诉我们想听什么歌曲",
-                    fontSize = 12.sp,
-                    color = LimeBlue.copy(alpha = 0.68f)
-                )
-            }
-
-            Icon(
-                Icons.Default.ChevronRight,
-                contentDescription = "反馈",
-                tint = LimeBlue,
-                modifier = Modifier.size(22.dp)
-            )
-        }
+        Text(
+            text = "反馈给我们",
+            fontSize = 13.sp,
+            color = TextSecondary
+        )
     }
 }
 
@@ -786,55 +662,52 @@ private fun MiniPlayer(
             .fillMaxWidth()
             .padding(
                 horizontal = 10.dp,
-                vertical = 7.dp
+                vertical = 6.dp
             ),
-        shape = RoundedCornerShape(27.dp),
-        color = Color.White.copy(alpha = 0.92f),
-        shadowElevation = 10.dp
+        shape = RoundedCornerShape(18.dp),
+        color = SurfaceColor,
+        shadowElevation = 5.dp
     ) {
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 13.dp,
-                    vertical = 9.dp
+                    start = 12.dp,
+                    end = 8.dp,
+                    top = 8.dp,
+                    bottom = 4.dp
                 )
         ) {
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Box(
                     modifier = Modifier
-                        .size(49.dp)
+                        .size(42.dp)
                         .background(
-                            Brush.linearGradient(
-                                listOf(
-                                    LimeBlue,
-                                    LimeBlueLight
-                                )
-                            ),
-                            RoundedCornerShape(15.dp)
+                            BlueSoft,
+                            RoundedCornerShape(11.dp)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
 
                     Icon(
-                        if (isPlaying) {
-                            Icons.Default.GraphicEq
-                        } else {
-                            Icons.Default.MusicNote
-                        },
+                        imageVector = Icons.Default.MusicNote,
                         contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(22.dp)
+                        tint = Blue,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 
-                Spacer(Modifier.width(11.dp))
+                Spacer(
+                    modifier = Modifier.width(10.dp)
+                )
 
                 Column(
                     modifier = Modifier.weight(1f)
@@ -844,68 +717,76 @@ private fun MiniPlayer(
                         text = music.displayTitle(),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = TextPrimary
                     )
 
-                    Spacer(Modifier.height(2.dp))
+                    Spacer(
+                        modifier = Modifier.height(2.dp)
+                    )
 
                     Text(
                         text = music.displayArtist(),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         fontSize = 11.sp,
-                        color = LimeBlue.copy(alpha = 0.78f)
+                        color = TextSecondary
                     )
                 }
 
                 IconButton(
-                    onClick = onPrevious
+                    onClick = onPrevious,
+                    modifier = Modifier.size(38.dp)
                 ) {
 
                     Icon(
-                        Icons.Default.SkipPrevious,
+                        imageVector = Icons.Default.SkipPrevious,
                         contentDescription = "上一首",
-                        tint = TextPrimary
+                        tint = TextPrimary,
+                        modifier = Modifier.size(21.dp)
                     )
                 }
 
-                Surface(
-                    modifier = Modifier.size(43.dp),
-                    shape = CircleShape,
-                    color = LimeBlue,
-                    shadowElevation = 4.dp
-                ) {
-
-                    IconButton(
-                        onClick = onPlayPause
-                    ) {
-
-                        Icon(
-                            if (isPlaying) {
-                                Icons.Default.Pause
-                            } else {
-                                Icons.Default.PlayArrow
-                            },
-                            contentDescription = if (isPlaying) {
-                                "暂停"
-                            } else {
-                                "播放"
-                            },
-                            tint = Color.White
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            Blue,
+                            CircleShape
                         )
-                    }
-                }
-
-                IconButton(
-                    onClick = onNext
+                        .clickable(
+                            onClick = onPlayPause
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
 
                     Icon(
-                        Icons.Default.SkipNext,
+                        imageVector = if (isPlaying) {
+                            Icons.Default.Pause
+                        } else {
+                            Icons.Default.PlayArrow
+                        },
+                        contentDescription = if (isPlaying) {
+                            "暂停"
+                        } else {
+                            "播放"
+                        },
+                        tint = Color.White,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = onNext,
+                    modifier = Modifier.size(38.dp)
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.SkipNext,
                         contentDescription = "下一首",
-                        tint = TextPrimary
+                        tint = TextPrimary,
+                        modifier = Modifier.size(21.dp)
                     )
                 }
             }
@@ -916,11 +797,11 @@ private fun MiniPlayer(
                 onValueChangeFinished = onSeekFinished,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(24.dp),
+                    .height(22.dp),
                 colors = SliderDefaults.colors(
-                    thumbColor = LimeBlue,
-                    activeTrackColor = LimeBlue,
-                    inactiveTrackColor = Color(0xFFDCE5F6)
+                    thumbColor = Blue,
+                    activeTrackColor = Blue,
+                    inactiveTrackColor = Color(0xFFE2E5EB)
                 )
             )
         }
@@ -933,7 +814,7 @@ private fun LoadingView(
 ) {
 
     Box(
-        Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
@@ -942,17 +823,19 @@ private fun LoadingView(
         ) {
 
             CircularProgressIndicator(
-                modifier = Modifier.size(36.dp),
-                strokeWidth = 3.dp,
-                color = LimeBlue
+                modifier = Modifier.size(30.dp),
+                strokeWidth = 2.5.dp,
+                color = Blue
             )
 
-            Spacer(Modifier.height(15.dp))
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
 
             Text(
                 text = text,
-                fontSize = 14.sp,
-                color = LimeBlue
+                fontSize = 13.sp,
+                color = TextSecondary
             )
         }
     }
@@ -965,94 +848,64 @@ private fun EmptyView(
 ) {
 
     Box(
-        Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
         Column(
-            modifier = Modifier.padding(28.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(24.dp)
         ) {
 
-            Box(
-                modifier = Modifier
-                    .size(78.dp)
-                    .background(
-                        LimeBlueSoft,
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
+            Icon(
+                imageVector = Icons.Default.MusicNote,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = Color(0xFFB7BDC8)
+            )
 
-                Icon(
-                    Icons.Default.MusicNote,
-                    contentDescription = null,
-                    modifier = Modifier.size(36.dp),
-                    tint = LimeBlue
-                )
-            }
-
-            Spacer(Modifier.height(17.dp))
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
 
             Text(
                 text = if (searching) {
                     "没有找到相关歌曲"
                 } else {
-                    "还没有音乐"
+                    "音乐库是空的"
                 },
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
                 color = TextPrimary
             )
 
-            Spacer(Modifier.height(6.dp))
+            Spacer(
+                modifier = Modifier.height(5.dp)
+            )
 
             Text(
                 text = if (searching) {
-                    "换一个关键词试试看"
+                    "换个关键词试试看"
                 } else {
-                    "音乐库里暂时没有歌曲"
+                    "暂时没有可播放的歌曲"
                 },
-                fontSize = 13.sp,
+                fontSize = 12.sp,
                 color = TextSecondary
             )
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(
+                modifier = Modifier.height(15.dp)
+            )
 
-            Surface(
-                modifier = Modifier
-                    .clickable {
-                        openMusicFeedbackEmail(context)
-                    },
-                shape = RoundedCornerShape(18.dp),
-                color = LimeBlue
-            ) {
-
-                Row(
-                    modifier = Modifier.padding(
-                        horizontal = 18.dp,
-                        vertical = 11.dp
-                    ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Icon(
-                        Icons.Default.Email,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-
-                    Spacer(Modifier.width(8.dp))
-
-                    Text(
-                        text = "反馈想听的歌曲",
-                        color = Color.White,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
+            Text(
+                text = "反馈想听的歌曲",
+                modifier = Modifier.clickable {
+                    openMusicFeedbackEmail(context)
+                },
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = Blue
+            )
         }
     }
 }
@@ -1064,71 +917,45 @@ private fun ErrorView(
 ) {
 
     Box(
-        Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
+            modifier = Modifier.padding(28.dp)
         ) {
-
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .background(
-                        Color(0xFFFFEEF0),
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Icon(
-                    Icons.Default.CloudOff,
-                    contentDescription = null,
-                    tint = Color(0xFFE45D6B),
-                    modifier = Modifier.size(29.dp)
-                )
-            }
-
-            Spacer(Modifier.height(15.dp))
 
             Text(
                 text = "音乐库加载失败",
-                fontWeight = FontWeight.Bold,
-                fontSize = 17.sp,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
                 color = TextPrimary
             )
 
-            Spacer(Modifier.height(7.dp))
+            Spacer(
+                modifier = Modifier.height(7.dp)
+            )
 
             Text(
                 text = message,
-                color = TextSecondary,
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                color = TextSecondary
             )
 
-            Spacer(Modifier.height(17.dp))
+            Spacer(
+                modifier = Modifier.height(14.dp)
+            )
 
-            Surface(
+            Text(
+                text = "重新加载",
                 modifier = Modifier.clickable(
                     onClick = onRetry
                 ),
-                shape = RoundedCornerShape(16.dp),
-                color = LimeBlue
-            ) {
-
-                Text(
-                    text = "重新加载",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(
-                        horizontal = 23.dp,
-                        vertical = 11.dp
-                    )
-                )
-            }
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = Blue
+            )
         }
     }
 }
@@ -1140,37 +967,40 @@ private fun ErrorToast(
 ) {
 
     Surface(
-        shape = RoundedCornerShape(19.dp),
-        color = Color(0xFF252B38),
-        shadowElevation = 10.dp
+        shape = RoundedCornerShape(14.dp),
+        color = Color(0xFF292D35),
+        shadowElevation = 8.dp
     ) {
 
         Row(
-            modifier = Modifier.padding(
-                start = 15.dp,
-                end = 5.dp,
-                top = 5.dp,
-                bottom = 5.dp
-            ),
+            modifier = Modifier
+                .padding(
+                    start = 14.dp,
+                    end = 3.dp,
+                    top = 3.dp,
+                    bottom = 3.dp
+                ),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             Text(
                 text = message,
-                color = Color.White,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                fontSize = 13.sp
+                color = Color.White,
+                fontSize = 12.sp
             )
 
             IconButton(
-                onClick = onClose
+                onClick = onClose,
+                modifier = Modifier.size(34.dp)
             ) {
 
                 Icon(
-                    Icons.Default.Close,
+                    imageVector = Icons.Default.Close,
                     contentDescription = "关闭",
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
