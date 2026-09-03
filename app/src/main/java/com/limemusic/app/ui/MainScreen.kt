@@ -233,23 +233,16 @@ fun MainScreen(
                 }
             }
 
-            AnimatedVisibility(
-                visible = currentMusic != null,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-
-                currentMusic?.let { music ->
-        MiniPlayer(
-            currentMusic = music,
-            isPlaying = isPlaying,
-            progress = progress,
-            onPrevious = playerViewModel::previous,
-            onPlayPause = playerViewModel::togglePlayPause,
-            onNext = playerViewModel::next,
-            onSeek = playerViewModel::seekFraction
-        )
-    }
+            currentMusic?.let { music ->
+                MiniPlayer(
+                    currentMusic = music,
+                    isPlaying = isPlaying,
+                    progress = progress,
+                    onPrevious = playerViewModel::previous,
+                    onPlayPause = playerViewModel::togglePlayPause,
+                    onNext = playerViewModel::next,
+                    onSeek = playerViewModel::seekFraction
+                )
             }
         }
 
