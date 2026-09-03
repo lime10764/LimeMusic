@@ -33,8 +33,21 @@ class MusicRepository {
                     }
 
                     val sorted = musicList.sortedWith(
-                        compareBy<MusicItem>(String.CASE_INSENSITIVE_ORDER) { it.title }
-                            .thenBy(String.CASE_INSENSITIVE_ORDER) { it.artist }
+                        Comparator { a, b ->
+                            val titleCompare = a.title.compareTo(
+                                b.title,
+                                ignoreCase = true
+                            )
+
+                            if (titleCompare != 0) {
+                                titleCompare
+                            } else {
+                                a.artist.compareTo(
+                                    b.artist,
+                                    ignoreCase = true
+                                )
+                            }
+                        }
                     )
 
                     cachedMusic = sorted

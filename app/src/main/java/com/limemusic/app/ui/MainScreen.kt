@@ -16,7 +16,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -291,8 +290,7 @@ private fun MusicRow(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick),
+                        .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
         color = if (playing) {
             Color(0xFFDDE7FF)
@@ -310,8 +308,7 @@ private fun MusicRow(
             Box(
                 Modifier
                     .size(48.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(
+                                        .background(
                         if (playing) Color(0xFF6D8FFF)
                         else Color(0xFFE9ECF3)
                     ),
@@ -391,8 +388,7 @@ private fun MiniPlayer(
                 Box(
                     Modifier
                         .size(46.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFFE4E9F8)),
+                                                .background(Color(0xFFE4E9F8)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
