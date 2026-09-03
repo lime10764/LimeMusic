@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#F1F4FF</color>
+    <string name="app_name">Lime Music</string>
+    <string name="check_github_repository">请检查 GitHub 音乐仓库</string>
+    <string name="close">关闭</string>
+    <string name="loading_music">正在同步音乐...</string>
+    <string name="music_library">音乐库</string>
+    <string name="music_library_empty">音乐库是空的</string>
+    <string name="music_load_failed">音乐库加载失败</string>
+    <string name="music_notification_channel">音乐播放</string>
+    <string name="music_playback_channel">音乐播放</string>
+    <string name="music_playback_channel_description">Lime Music 音乐播放控制</string>
+    <string name="next">下一首</string>
+    <string name="no_music_found">没有找到相关歌曲</string>
+    <string name="notification_permission_message">允许通知后，Lime Music 可以在后台和锁屏界面显示播放控制。</string>
+    <string name="notification_permission_title">播放通知权限</string>
+    <string name="pause">暂停</string>
+    <string name="play">播放</string>
+    <string name="player_error">播放失败</string>
+    <string name="preparing_music">准备音乐库...</string>
+    <string name="previous">上一首</string>
+    <string name="refresh_music">刷新音乐库</string>
+    <string name="reload">重新加载</string>
+    <string name="search_music">搜索歌曲或歌手</string>
+    <string name="seek">调整播放进度</string>
+    <string name="song_count">%1$d 首歌曲</string>
+    <string name="try_another_keyword">换个关键词试试看</string>
+    <string name="unknown_artist">未知歌手</string>
+    <style name="Theme.LimeMusic" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#F7F9FF</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">#F7F9FF</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowDisablePreview">false</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:textColorPrimary">#20242C</item>
+        <item name="android:textColorSecondary">#777D88</item>
+        <item name="android:colorAccent">#647BD2</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowSplashScreenBackground">#F7F9FF</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+    </style>
+</resources>

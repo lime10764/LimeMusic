@@ -1,0 +1,30 @@
+[
+    {
+        "merged": "com.limemusic.app-debug-55:/mipmap-mdpi_ic_launcher.xml.flat",
+        "source": "com.limemusic.app-main-57:/mipmap-mdpi/ic_launcher.xml"
+    },
+    {
+        "merged": "com.limemusic.app-debug-55:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.limemusic.app-main-57:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.limemusic.app-debug-55:/xml_backup_rules.xml.flat",
+        "source": "com.limemusic.app-main-57:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.limemusic.app-debug-55:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.limemusic.app-main-57:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.limemusic.app-debug-55:/mipmap-mdpi_ic_launcher_round.xml.flat",
+        "source": "com.limemusic.app-main-57:/mipmap-mdpi/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.limemusic.app-debug-55:/xml_data_extraction_rules.xml.flat",
+        "source": "com.limemusic.app-main-57:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.limemusic.app-debug-55:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.limemusic.app-main-57:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    }
+]

@@ -1,0 +1,35 @@
+R_DEF: Internal format may change without notice
+local
+color ic_launcher_background
+drawable ic_launcher_foreground
+mipmap ic_launcher
+mipmap ic_launcher_round
+string app_name
+string check_github_repository
+string close
+string loading_music
+string music_library
+string music_library_empty
+string music_load_failed
+string music_notification_channel
+string music_playback_channel
+string music_playback_channel_description
+string next
+string no_music_found
+string notification_permission_message
+string notification_permission_title
+string pause
+string play
+string player_error
+string preparing_music
+string previous
+string refresh_music
+string reload
+string search_music
+string seek
+string song_count
+string try_another_keyword
+string unknown_artist
+style Theme.LimeMusic
+xml backup_rules
+xml data_extraction_rules
