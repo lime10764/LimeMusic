@@ -514,6 +514,7 @@ private fun MusicRow(
     isPlaying: Boolean,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
@@ -683,6 +684,9 @@ private fun MiniPlayer(
     onNext: () -> Unit,
     onSeek: (Float) -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+
     val playInteraction = remember {
         MutableInteractionSource()
     }
