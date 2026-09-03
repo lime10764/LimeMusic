@@ -191,8 +191,6 @@ fun MainScreen(
 
 
 
-    val context = androidx.compose.ui.platform.LocalContext.current
-
     val libraryState by musicViewModel.libraryState.collectAsState()
     val musicList by musicViewModel.displayMusic.collectAsState()
     val searchQuery by musicViewModel.searchQuery.collectAsState()
