@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:2:1-43:12
-INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:2:1-43:12
-INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:2:1-43:12
-INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:2:1-43:12
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:2:1-47:12
+INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:2:1-47:12
+INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:2:1-47:12
+INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:2:1-47:12
 MERGED from [androidx.navigation:navigation-runtime-android:2.9.4] /data/data/com.termux/files/home/.gradle/caches/8.13/transforms/cb4dbd027fab107e3396516d65282b62/transformed/navigation-runtime-release/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-android:2.9.4] /data/data/com.termux/files/home/.gradle/caches/8.13/transforms/884414428352ea2f1d3c826f3e99d9ed/transformed/navigation-common-release/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-compose-android:2.9.4] /data/data/com.termux/files/home/.gradle/caches/8.13/transforms/afefebf73dfdb238fa8658dd6ad3a668/transformed/navigation-compose-release/AndroidManifest.xml:2:1-7:12
@@ -125,9 +125,19 @@ uses-permission#android.permission.WAKE_LOCK
 ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:9:5-68
 	android:name
 		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:9:22-65
+uses-permission#android.permission.READ_MEDIA_AUDIO
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:11:9-79
+	android:name
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:11:26-76
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:13:9-111
+	android:maxSdkVersion
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:13:82-108
+	android:name
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:13:26-81
 application
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:11:5-42:19
-INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:11:5-42:19
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:15:5-46:19
+INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:15:5-46:19
 MERGED from [androidx.compose.ui:ui-tooling-android:1.9.1] /data/data/com.termux/files/home/.gradle/caches/8.13/transforms/269336c5c5fac18fa9e05ab317168fdf/transformed/ui-tooling/AndroidManifest.xml:22:5-26:19
 MERGED from [androidx.compose.ui:ui-tooling-android:1.9.1] /data/data/com.termux/files/home/.gradle/caches/8.13/transforms/269336c5c5fac18fa9e05ab317168fdf/transformed/ui-tooling/AndroidManifest.xml:22:5-26:19
 MERGED from [androidx.emoji2:emoji2:1.4.0] /data/data/com.termux/files/home/.gradle/caches/8.13/transforms/de9d62e8cbeed9d027d33dfef0f90de3/transformed/emoji2-1.4.0/AndroidManifest.xml:23:5-33:19
@@ -151,61 +161,61 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /data/data/
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.17.0] /data/data/com.termux/files/home/.gradle/caches/8.13/transforms/dc2070aa231a123c416c70f4c8b92605/transformed/core-1.17.0/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:19:9-35
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:23:9-35
 	android:label
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:17:9-35
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:21:9-35
 	android:fullBackupContent
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:15:9-54
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:19:9-54
 	android:roundIcon
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:18:9-54
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:22:9-54
 	android:icon
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:16:9-43
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:20:9-43
 	android:allowBackup
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:13:9-35
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:17:9-35
 	android:theme
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:20:9-47
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:24:9-47
 	android:dataExtractionRules
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:14:9-65
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:18:9-65
 	android:usesCleartextTraffic
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:21:9-45
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:25:9-45
 	android:name
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:12:9-45
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:16:9-45
 activity#com.limemusic.app.MainActivity
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:23:9-31:20
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:27:9-35:20
 	android:screenOrientation
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:26:13-49
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:30:13-49
 	android:exported
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:25:13-36
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:29:13-36
 	android:name
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:24:13-41
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:28:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:27:13-30:29
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:31:13-34:29
 action#android.intent.action.MAIN
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:28:17-69
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:32:17-69
 	android:name
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:28:25-66
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:32:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:29:17-77
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:33:17-77
 	android:name
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:29:27-74
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:33:27-74
 service#com.limemusic.app.player.MusicPlaybackService
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:33:9-41:19
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:37:9-45:19
 	android:exported
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:35:13-36
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:39:13-36
 	android:foregroundServiceType
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:36:13-58
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:40:13-58
 	android:name
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:34:13-56
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:38:13-56
 intent-filter#action:name:android.media.browse.MediaBrowserService+action:name:androidx.media3.session.MediaSessionService
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:37:13-40:29
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:41:13-44:29
 action#androidx.media3.session.MediaSessionService
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:38:17-86
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:42:17-86
 	android:name
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:38:25-83
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:42:25-83
 action#android.media.browse.MediaBrowserService
-ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:39:17-83
+ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:43:17-83
 	android:name
-		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:39:25-80
+		ADDED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml:43:25-80
 uses-sdk
 INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /storage/emulated/0/下载/liquid-glass-player/LimeMusic/app/src/main/AndroidManifest.xml

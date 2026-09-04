@@ -14,6 +14,7 @@ data class MusicItem(
     val playCount: Long = 0L,
     val lastPlayedAt: Long = 0L,
     val durationMs: Long = -1L,
+    val album: String? = null,
     val artworkUrl: String? = null
 ) {
     fun displayArtist(): String =

@@ -125,6 +125,7 @@ object LocalMusicRepository {
                         playCount = 0L,
                         lastPlayedAt = 0L,
                         durationMs = duration,
+                        album = album,
                         artworkUrl = null
                     )
                 )

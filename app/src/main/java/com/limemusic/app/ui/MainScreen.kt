@@ -4,6 +4,7 @@
 
 
 package com.limemusic.app.ui
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 
 import android.Manifest
@@ -38,6 +39,11 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
+import com.limemusic.app.player.LyricsRepository
+import com.limemusic.app.player.LyricsResult
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -198,6 +204,10 @@ fun MainScreen(
 
     val currentMusic by playerViewModel.currentMusic.collectAsState()
     val isPlaying by playerViewModel.isPlaying.collectAsState()
+
+    var showFullPlayer by rememberSaveable {
+        mutableStateOf(false)
+    }
     val progress by playerViewModel.progress.collectAsState()
     val playerError by playerViewModel.error.collectAsState()
 
@@ -354,9 +364,42 @@ fun MainScreen(
                     onPrevious = playerViewModel::previous,
                     onPlayPause = playerViewModel::togglePlayPause,
                     onNext = playerViewModel::next,
-                    onSeek = playerViewModel::seekFraction
+                    onSeek = playerViewModel::seekFraction,
+                    onOpenFullPlayer = {
+                        showFullPlayer = true
+                    }
                 )
             }
+        }
+
+        LaunchedEffect(showFullPlayer) {
+        if (showFullPlayer) {
+            playerViewModel.startLyricsSync()
+        } else {
+            playerViewModel.stopLyricsSync()
+        }
+    }
+
+    if (showFullPlayer && currentMusic != null) {
+            val positionMs by playerViewModel.positionMs.collectAsState()
+            val durationMs by playerViewModel.durationMs.collectAsState()
+            val lyricsPositionMs by playerViewModel.lyricsPositionMs.collectAsState()
+
+            FullPlayerScreen(
+                currentMusic = currentMusic!!,
+                isPlaying = isPlaying,
+                progress = progress,
+                positionMs = positionMs,
+                durationMs = durationMs,
+                lyricsPositionMs = lyricsPositionMs,
+                onBack = {
+                    showFullPlayer = false
+                },
+                onPrevious = playerViewModel::previous,
+                onPlayPause = playerViewModel::togglePlayPause,
+                onNext = playerViewModel::next,
+                onSeek = playerViewModel::seekFraction
+            )
         }
 
         AnimatedVisibility(
@@ -788,7 +831,8 @@ private fun MiniPlayer(
     onPrevious: () -> Unit,
     onPlayPause: () -> Unit,
     onNext: () -> Unit,
-    onSeek: (Float) -> Unit
+    onSeek: (Float) -> Unit,
+    onOpenFullPlayer: () -> Unit
 ) {
     val playInteraction = remember {
         MutableInteractionSource()
@@ -808,6 +852,7 @@ private fun MiniPlayer(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onOpenFullPlayer)
             .padding(horizontal = 10.dp, vertical = 5.dp),
         shape = RoundedCornerShape(17.dp),
         color = SurfaceColor,
@@ -1159,3 +1204,267 @@ private fun ErrorToast(
         }
     }
 }
+
+@Composable
+private fun FullPlayerScreen(
+    currentMusic: MusicItem,
+    isPlaying: Boolean,
+    progress: Float,
+    positionMs: Long,
+    durationMs: Long,
+    lyricsPositionMs: Long,
+    onBack: () -> Unit,
+    onPrevious: () -> Unit,
+    onPlayPause: () -> Unit,
+    onNext: () -> Unit,
+    onSeek: (Float) -> Unit
+) {
+    var lyricsResult by remember(currentMusic.id) {
+        mutableStateOf<LyricsResult?>(null)
+    }
+
+    var lyricsLoading by remember(currentMusic.id) {
+        mutableStateOf(true)
+    }
+
+    val lyricsListState = rememberLazyListState()
+
+    LaunchedEffect(currentMusic.id, durationMs) {
+        lyricsLoading = true
+        lyricsResult = null
+
+        val result = LyricsRepository.getLyrics(
+            music = currentMusic,
+            durationMs = durationMs
+        )
+
+        lyricsResult = result
+        lyricsLoading = false
+    }
+
+    val syncedLines = lyricsResult
+        ?.takeIf { it.synced }
+        ?.lines
+        .orEmpty()
+
+    val currentLyricIndex = remember(
+        syncedLines,
+        lyricsPositionMs
+    ) {
+        if (syncedLines.isEmpty()) {
+            -1
+        } else {
+            syncedLines.indexOfLast { lyricsPositionMs >= it.timeMs }
+                .coerceIn(0, syncedLines.lastIndex)
+        }
+    }
+
+    LaunchedEffect(currentLyricIndex) {
+        if (currentLyricIndex >= 0 &&
+            lyricsListState.firstVisibleItemIndex != currentLyricIndex
+        ) {
+            lyricsListState.animateScrollToItem(currentLyricIndex)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .statusBarsPadding()
+            .navigationBarsPadding()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = onBack) {
+                    Text(
+                        text = "‹",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Light
+                    )
+                }
+
+                Text(
+                    text = "正在播放",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.width(48.dp))
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "♫",
+                    fontSize = 72.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = currentMusic.displayTitle(),
+                style = MaterialTheme.typography.headlineSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = currentMusic.displayArtist(),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Slider(
+                value = progress.coerceIn(0f, 1f),
+                onValueChange = onSeek,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextButton(onClick = onPrevious) {
+                    Text("上一首")
+                }
+
+                FilledIconButton(onClick = onPlayPause) {
+                    Text(
+                        text = if (isPlaying) "Ⅱ" else "▶",
+                        fontSize = 22.sp
+                    )
+                }
+
+                TextButton(onClick = onNext) {
+                    Text("下一首")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "歌词",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                when {
+                    lyricsLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "歌词加载中…",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    lyricsResult == null -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "暂无准确歌词",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    lyricsResult?.synced != true -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "暂无同步歌词",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    else -> {
+                        val lines = lyricsResult!!.lines
+
+                        LazyColumn(
+                            state = lyricsListState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                top = 80.dp,
+                                bottom = 120.dp
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(18.dp)
+                        ) {
+                            itemsIndexed(lines) { index, line ->
+
+                                val activeIndex =
+                                    lines.indexOfLast {
+                                        lyricsPositionMs >= it.timeMs
+                                    }
+
+                                val active = index == activeIndex
+
+                                Text(
+                                    text = line.text,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    style = if (active) {
+                                        MaterialTheme.typography.titleLarge
+                                    } else {
+                                        MaterialTheme.typography.bodyLarge
+                                    },
+                                    fontWeight = if (active) {
+                                        FontWeight.SemiBold
+                                    } else {
+                                        FontWeight.Normal
+                                    },
+                                    color = if (active) {
+                                        Blue
+                                    } else {
+                                        TextSecondary
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

@@ -29,6 +29,9 @@ class MusicPlayerViewModel(application: Application) :
     val currentMusic: StateFlow<MusicItem?> = _currentMusic.asStateFlow()
 
     private val _positionMs = MutableStateFlow(0L)
+
+    private val _lyricsPositionMs = MutableStateFlow(0L)
+    val lyricsPositionMs: StateFlow<Long> = _lyricsPositionMs
     val positionMs: StateFlow<Long> = _positionMs.asStateFlow()
 
     private val _durationMs = MutableStateFlow(0L)
@@ -51,6 +54,7 @@ class MusicPlayerViewModel(application: Application) :
     val seeking: StateFlow<Boolean> = _seeking.asStateFlow()
 
     private var progressJob: Job? = null
+    private var lyricsProgressJob: Job? = null
     private var pendingAction: (() -> Unit)? = null
 
     private val playerListener = object : Player.Listener {
@@ -244,6 +248,7 @@ class MusicPlayerViewModel(application: Application) :
 
         val position = (duration * safeFraction).toLong()
         _positionMs.value = position
+        _lyricsPositionMs.value = position
         _progress.value = safeFraction
     }
 
@@ -275,6 +280,7 @@ class MusicPlayerViewModel(application: Application) :
         val duration = playerManager.getDuration()
 
         _positionMs.value = position
+        _lyricsPositionMs.value = position
         _durationMs.value = duration
 
         _progress.value =
@@ -284,6 +290,30 @@ class MusicPlayerViewModel(application: Application) :
             } else {
                 0f
             }
+    }
+
+    fun startLyricsSync() {
+        if (lyricsProgressJob?.isActive == true) return
+
+        lyricsProgressJob = viewModelScope.launch {
+            while (true) {
+                if (playerManager.isPlaying() && !_seeking.value) {
+                    _lyricsPositionMs.value =
+                        playerManager.getCurrentPosition()
+                }
+
+                if (!playerManager.isPlaying()) {
+                    break
+                }
+
+                delay(100L)
+            }
+        }
+    }
+
+    fun stopLyricsSync() {
+        lyricsProgressJob?.cancel()
+        lyricsProgressJob = null
     }
 
     private fun startProgressUpdates() {
